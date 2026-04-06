@@ -1,0 +1,362 @@
+{
+  "Version": 1,
+  "Hash": "5lOr+NTbJY0YUI1Y2nSY9ILo0HXGASmIuSTfLk9Oa9I=",
+  "Source": "SnakeGame",
+  "BasePath": "_content/SnakeGame",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "SnakeGame\\wwwroot",
+      "Source": "SnakeGame",
+      "ContentRoot": "C:\\Users\\Admin\\Downloads\\SnakeGame\\wwwroot\\",
+      "BasePath": "_content/SnakeGame",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\Users\\Admin\\Downloads\\SnakeGame\\obj\\Debug\\net9.0\\compressed\\qjkj47g5ge-sswod22s1y.gz",
+      "SourceId": "SnakeGame",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\Downloads\\SnakeGame\\obj\\Debug\\net9.0\\compressed\\",
+      "BasePath": "_content/SnakeGame",
+      "RelativePath": "index#[.{fingerprint=sswod22s1y}]?.html.gz",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "C:\\Users\\Admin\\Downloads\\SnakeGame\\wwwroot\\index.html",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "Fingerprint": "25v00s76n5",
+      "Integrity": "pn1EO+eRzgJK2uGBMGfVj1Z+VQuEV8JC8I/tgOsIEPI=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "C:\\Users\\Admin\\Downloads\\SnakeGame\\wwwroot\\index.html"
+    },
+    {
+      "Identity": "C:\\Users\\Admin\\Downloads\\SnakeGame\\wwwroot\\index.html",
+      "SourceId": "SnakeGame",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Admin\\Downloads\\SnakeGame\\wwwroot\\",
+      "BasePath": "_content/SnakeGame",
+      "RelativePath": "index#[.{fingerprint}]?.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "sswod22s1y",
+      "Integrity": "DFGKSm3v50sFgx7b+tHn/RyQhCdz5TOdHuJqfirBQvo=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\index.html"
+    }
+  ],
+  "Endpoints": [
+    {
+      "Route": "index.html",
+      "AssetFile": "C:\\Users\\Admin\\Downloads\\SnakeGame\\obj\\Debug\\net9.0\\compressed\\qjkj47g5ge-sswod22s1y.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000195427008"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5116"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"pn1EO+eRzgJK2uGBMGfVj1Z+VQuEV8JC8I/tgOsIEPI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 18 Mar 2026 00:50:15 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"DFGKSm3v50sFgx7b+tHn/RyQhCdz5TOdHuJqfirBQvo=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-DFGKSm3v50sFgx7b+tHn/RyQhCdz5TOdHuJqfirBQvo="
+        }
+      ]
+    },
+    {
+      "Route": "index.html",
+      "AssetFile": "C:\\Users\\Admin\\Downloads\\SnakeGame\\wwwroot\\index.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "14900"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"DFGKSm3v50sFgx7b+tHn/RyQhCdz5TOdHuJqfirBQvo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 18 Mar 2026 00:50:15 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-DFGKSm3v50sFgx7b+tHn/RyQhCdz5TOdHuJqfirBQvo="
+        }
+      ]
+    },
+    {
+      "Route": "index.html.gz",
+      "AssetFile": "C:\\Users\\Admin\\Downloads\\SnakeGame\\obj\\Debug\\net9.0\\compressed\\qjkj47g5ge-sswod22s1y.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5116"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"pn1EO+eRzgJK2uGBMGfVj1Z+VQuEV8JC8I/tgOsIEPI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 18 Mar 2026 00:50:15 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-pn1EO+eRzgJK2uGBMGfVj1Z+VQuEV8JC8I/tgOsIEPI="
+        }
+      ]
+    },
+    {
+      "Route": "index.sswod22s1y.html",
+      "AssetFile": "C:\\Users\\Admin\\Downloads\\SnakeGame\\obj\\Debug\\net9.0\\compressed\\qjkj47g5ge-sswod22s1y.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000195427008"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5116"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"pn1EO+eRzgJK2uGBMGfVj1Z+VQuEV8JC8I/tgOsIEPI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 18 Mar 2026 00:50:15 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"DFGKSm3v50sFgx7b+tHn/RyQhCdz5TOdHuJqfirBQvo=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "sswod22s1y"
+        },
+        {
+          "Name": "label",
+          "Value": "index.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-DFGKSm3v50sFgx7b+tHn/RyQhCdz5TOdHuJqfirBQvo="
+        }
+      ]
+    },
+    {
+      "Route": "index.sswod22s1y.html",
+      "AssetFile": "C:\\Users\\Admin\\Downloads\\SnakeGame\\wwwroot\\index.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "14900"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"DFGKSm3v50sFgx7b+tHn/RyQhCdz5TOdHuJqfirBQvo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 18 Mar 2026 00:50:15 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "sswod22s1y"
+        },
+        {
+          "Name": "label",
+          "Value": "index.html"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-DFGKSm3v50sFgx7b+tHn/RyQhCdz5TOdHuJqfirBQvo="
+        }
+      ]
+    },
+    {
+      "Route": "index.sswod22s1y.html.gz",
+      "AssetFile": "C:\\Users\\Admin\\Downloads\\SnakeGame\\obj\\Debug\\net9.0\\compressed\\qjkj47g5ge-sswod22s1y.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "5116"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"pn1EO+eRzgJK2uGBMGfVj1Z+VQuEV8JC8I/tgOsIEPI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 18 Mar 2026 00:50:15 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "sswod22s1y"
+        },
+        {
+          "Name": "label",
+          "Value": "index.html.gz"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-pn1EO+eRzgJK2uGBMGfVj1Z+VQuEV8JC8I/tgOsIEPI="
+        }
+      ]
+    }
+  ]
+}

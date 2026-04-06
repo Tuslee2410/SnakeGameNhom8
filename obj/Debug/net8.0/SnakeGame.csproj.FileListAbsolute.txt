@@ -1,0 +1,57 @@
+C:\Users\Admin\Downloads\SnakeGame\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\Admin\Downloads\SnakeGame\bin\Debug\net8.0\appsettings.json
+C:\Users\Admin\Downloads\SnakeGame\bin\Debug\net8.0\SnakeGame.staticwebassets.runtime.json
+C:\Users\Admin\Downloads\SnakeGame\bin\Debug\net8.0\SnakeGame.staticwebassets.endpoints.json
+C:\Users\Admin\Downloads\SnakeGame\bin\Debug\net8.0\SnakeGame.exe
+C:\Users\Admin\Downloads\SnakeGame\bin\Debug\net8.0\SnakeGame.deps.json
+C:\Users\Admin\Downloads\SnakeGame\bin\Debug\net8.0\SnakeGame.runtimeconfig.json
+C:\Users\Admin\Downloads\SnakeGame\bin\Debug\net8.0\SnakeGame.dll
+C:\Users\Admin\Downloads\SnakeGame\bin\Debug\net8.0\SnakeGame.pdb
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\SnakeGame.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\SnakeGame.AssemblyInfoInputs.cache
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\SnakeGame.AssemblyInfo.cs
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\SnakeGame.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\SnakeGame.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\scopedcss\bundle\SnakeGame.styles.css
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\staticwebassets\msbuild.SnakeGame.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\staticwebassets\msbuild.SnakeGame.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\staticwebassets\msbuild.build.SnakeGame.props
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.SnakeGame.props
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.SnakeGame.props
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\staticwebassets.pack.json
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\SnakeGame.dll
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\refint\SnakeGame.dll
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\SnakeGame.pdb
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\SnakeGame.genruntimeconfig.cache
+C:\Users\Admin\Downloads\SnakeGame\obj\Debug\net8.0\ref\SnakeGame.dll
+C:\Users\ADMIN\Downloads\SnakeGame (1)\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\ADMIN\Downloads\SnakeGame (1)\bin\Debug\net8.0\appsettings.json
+C:\Users\ADMIN\Downloads\SnakeGame (1)\bin\Debug\net8.0\SnakeGame.staticwebassets.runtime.json
+C:\Users\ADMIN\Downloads\SnakeGame (1)\bin\Debug\net8.0\SnakeGame.staticwebassets.endpoints.json
+C:\Users\ADMIN\Downloads\SnakeGame (1)\bin\Debug\net8.0\SnakeGame.exe
+C:\Users\ADMIN\Downloads\SnakeGame (1)\bin\Debug\net8.0\SnakeGame.deps.json
+C:\Users\ADMIN\Downloads\SnakeGame (1)\bin\Debug\net8.0\SnakeGame.runtimeconfig.json
+C:\Users\ADMIN\Downloads\SnakeGame (1)\bin\Debug\net8.0\SnakeGame.dll
+C:\Users\ADMIN\Downloads\SnakeGame (1)\bin\Debug\net8.0\SnakeGame.pdb
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\SnakeGame.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\SnakeGame.AssemblyInfoInputs.cache
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\SnakeGame.AssemblyInfo.cs
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\SnakeGame.csproj.CoreCompileInputs.cache
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\SnakeGame.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\rjimswa.dswa.cache.json
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\scopedcss\bundle\SnakeGame.styles.css
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\staticwebassets.build.json.cache
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\SnakeGame.dll
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\refint\SnakeGame.dll
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\SnakeGame.pdb
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\SnakeGame.genruntimeconfig.cache
+C:\Users\ADMIN\Downloads\SnakeGame (1)\obj\Debug\net8.0\ref\SnakeGame.dll

@@ -1,0 +1,16 @@
+﻿<Project>
+  <ItemGroup>
+    <StaticWebAssetEndpoint Include="_content/SnakeGame/index.html">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\index.html'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-DFGKSm3v50sFgx7b\u002BtHn/RyQhCdz5TOdHuJqfirBQvo="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"14900"},{"Name":"Content-Type","Value":"text/html"},{"Name":"ETag","Value":"\u0022DFGKSm3v50sFgx7b\u002BtHn/RyQhCdz5TOdHuJqfirBQvo=\u0022"},{"Name":"Last-Modified","Value":"Wed, 18 Mar 2026 00:50:15 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/SnakeGame/index.sswod22s1y.html">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\index.html'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"sswod22s1y"},{"Name":"integrity","Value":"sha256-DFGKSm3v50sFgx7b\u002BtHn/RyQhCdz5TOdHuJqfirBQvo="},{"Name":"label","Value":"_content/SnakeGame/index.html"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"14900"},{"Name":"Content-Type","Value":"text/html"},{"Name":"ETag","Value":"\u0022DFGKSm3v50sFgx7b\u002BtHn/RyQhCdz5TOdHuJqfirBQvo=\u0022"},{"Name":"Last-Modified","Value":"Wed, 18 Mar 2026 00:50:15 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Snake Nhom 8 - Multiplayer</title>
+    <style>
+        #mobileControls {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 999;
+        }
+        #joystick {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            position: relative;
+            touch-action: none;
+        }
+        #stick {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            position: absolute;
+            left: 30px;
+            top: 30px;
+        }
+        #boostBtn {
+            position: fixed;
+            right: 40px;
+            bottom: 40px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            font-size: 30px;
+            background: orange;
+        }
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #0f0f1a;
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+        }
+        #menu, #gameover {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 1000;
+        }
+        button, input, select {
+            padding: 10px;
+            width: 220px;
+            margin: 10px;
+            border-radius: 10px;
+            border: none;
+            font-size: 16px;
+        }
+        button {
+            background: linear-gradient(45deg, #ff512f, #dd2476);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        #leaderboard {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 15px;
+            width: 220px;
+            font-size: 14px;
+            backdrop-filter: blur(5px);
+            border: 1px solid #444;
+            z-index: 100;
+        }
+        #minimap {
+            position: fixed;
+            left: 20px;
+            bottom: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            border: 2px solid #333;
+            z-index: 100;
+        }
+        canvas {
+            display: block;
+        }
+        #roomInfo {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.5);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 100;
+        }
+        @media (max-width: 768px) {
+            #leaderboard { width: 150px; font-size: 12px; }
+            #minimap { width: 120px; height: 120px; }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+</head>
+<body>
+    <div id="menu">
+        <h2>🐍 Snake Nhom 8</h2>
+        <input id="name" placeholder="Tên của bạn" value="Player"><br>
+        <select id="difficulty">
+            <option value="easy">Dễ</option>
+            <option value="medium" selected>Trung bình</option>
+            <option value="hard">Khó</option>
+        </select><br>
+        <button onclick="createRoom()">Tạo phòng</button>
+        <button onclick="joinRoom()">Vào phòng</button>
+        <button onclick="startSinglePlayer()">🎮 Chơi đơn</button>
+    </div>
+
+    <div id="gameover" style="display:none">
+        <h2>💀 GAME OVER</h2>
+        <p id="finalScore"></p>
+        <button onclick="leaveRoomAndReload()">Chơi lại</button>
+    </div>
+
+    <div id="roomInfo" style="display:none">Phòng: <span id="roomCode"></span></div>
+    <div id="leaderboard" style="display:none"></div>
+    <canvas id="minimap" width="200" height="200"></canvas>
+    <canvas id="game"></canvas>
+
+    <div id="mobileControls">
+        <div id="joystick"><div id="stick"></div></div>
+        <button id="boostBtn">⚡</button>
+    </div>
+
+    <script>
+        // ==================== KẾT NỐI SIGNALR ====================
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/gameHub")
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        connection.start().catch(err => console.error('SignalR error:', err));
+
+        let PLAYER_ID = Math.random().toString(36).substr(2, 9);
+        let ROOM = null;
+        let playersOnline = [];
+        let gameStateFromServer = null; // Lưu game state từ server
+
+        // ==================== CẤU HÌNH GAME ====================
+        const WORLD = 6000;
+        const MAX_FOOD = 200;
+        const MAX_BOTS = 10;
+
+        const canvas = document.getElementById("game");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const mini = document.getElementById("minimap");
+        const mctx = mini.getContext("2d");
+
+        let snakes = [];
+        let foods = [];
+        let walls = [];
+        let player = null;
+        let camera = { x: 0, y: 0 };
+        let boosting = false;
+        let botSpeed = 120;
+        let playerSpeed = 120;
+
+        // ==================== LẮNG NGHE SỰ KIỆN SIGNALR ====================
+        connection.on("RoomPlayers", (players) => {
+            console.log("📥 Players in room:", players);
+            playersOnline = players.map(p => ({
+                ...p,
+                body: p.bodyJson ? JSON.parse(p.bodyJson) : []
+            }));
+            if (player) updateLeaderboard();
+        });
+
+        connection.on("GameState", (state) => {
+            console.log("🎮 Game state received:", state);
+            gameStateFromServer = state;
+            // Đồng bộ tường từ server
+            if (state.walls) {
+                walls = state.walls;
+            }
+            // Đồng bộ thức ăn từ server
+            if (state.foods) {
+                foods = state.foods;
+            }
+        });
+
+        connection.on("GameStarted", (state) => {
+            console.log("🚀 Game started!");
+            gameStateFromServer = state;
+            if (state.walls) walls = state.walls;
+            if (state.foods) foods = state.foods;
+        });
+
+        connection.on("FoodAdded", (food) => {
+            foods.push(food);
+        });
+
+        connection.on("FoodRemoved", (foodId) => {
+            const index = foods.findIndex(f => f.id === foodId);
+            if (index !== -1) foods.splice(index, 1);
+        });
+
+        connection.on("Error", (msg) => {
+            alert("❌ Lỗi: " + msg);
+        });
+
+        // ==================== TẠO PHÒNG ====================
+        async function createRoom() {
+            let name = document.getElementById("name").value.trim();
+            if (name === "") { alert("Vui lòng nhập tên"); return; }
+            let room = prompt("Nhập mã phòng (tự chọn)");
+            if (!room) return;
+            let difficulty = document.getElementById("difficulty").value;
+
+            try {
+                await connection.invoke("CreateRoom", room, PLAYER_ID, name, difficulty);
+                ROOM = room;
+                document.getElementById("roomCode").innerText = ROOM;
+                document.getElementById("roomInfo").style.display = "block";
+                alert("✅ Đã tạo phòng: " + ROOM);
+                startMultiplayerGame();
+            } catch (err) {
+                console.error(err);
+                alert("❌ Không thể tạo phòng. Mã phòng có thể đã tồn tại.");
+            }
+        }
+
+        // ==================== VÀO PHÒNG ====================
+        async function joinRoom() {
+            let name = document.getElementById("name").value.trim();
+            if (name === "") { alert("Vui lòng nhập tên"); return; }
+            let room = prompt("Nhập mã phòng");
+            if (!room) return;
+
+            try {
+                await connection.invoke("JoinRoom", room, PLAYER_ID, name);
+                ROOM = room;
+                document.getElementById("roomCode").innerText = ROOM;
+                document.getElementById("roomInfo").style.display = "block";
+                alert("✅ Đã vào phòng: " + ROOM);
+                startMultiplayerGame();
+            } catch (err) {
+                console.error(err);
+                alert("❌ Không thể vào phòng. Mã phòng không tồn tại.");
+            }
+        }
+
+        // ==================== BẮT ĐẦU GAME MULTIPLAYER ====================
+        async function startMultiplayerGame() {
+            document.getElementById("menu").style.display = "none";
+            document.getElementById("leaderboard").style.display = "block";
+
+            // Nếu đã có game state từ server, dùng nó
+            if (gameStateFromServer && gameStateFromServer.walls) {
+                walls = gameStateFromServer.walls;
+                foods = gameStateFromServer.foods || [];
+            } else {
+                // Fallback: tự sinh tường (sẽ được đồng bộ sau)
+                generateWalls(document.getElementById("difficulty").value);
+            }
+
+            // Tạo player
+            player = new Snake(
+                document.getElementById("name").value || "Người chơi",
+                WORLD / 2, WORLD / 2, "lime"
+            );
+            snakes = [player];
+
+            // Tạo bot
+            for (let i = 0; i < MAX_BOTS; i++) spawnBot();
+            // Tạo thức ăn nếu chưa có
+            if (foods.length === 0) {
+                for (let i = 0; i < 100; i++) spawnFood();
+            }
+
+            // Báo server bắt đầu game (nếu là người tạo)
+            if (ROOM && gameStateFromServer && !gameStateFromServer.isGameRunning) {
+                await connection.invoke("StartGameInRoom", ROOM);
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ==================== CHƠI ĐƠN ====================
+        function startSinglePlayer() {
+            const level = document.getElementById("difficulty").value;
+            if (level === "easy") { botSpeed = 80; playerSpeed = 140; }
+            else if (level === "medium") { botSpeed = 120; playerSpeed = 120; }
+            else { botSpeed = 180; playerSpeed = 110; }
+
+            document.getElementById("menu").style.display = "none";
+            document.getElementById("leaderboard").style.display = "block";
+
+            generateWalls(level);
+
+            player = new Snake(
+                document.getElementById("name").value || "Người chơi",
+                WORLD / 2, WORLD / 2, "lime"
+            );
+            snakes = [player];
+
+            for (let i = 0; i < MAX_BOTS; i++) spawnBot();
+            for (let i = 0; i < 100; i++) spawnFood();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ==================== SINH TƯỜNG ====================
+        function generateWalls(level) {
+            walls = [];
+            let count = level === "easy" ? 15 : level === "medium" ? 40 : 80;
+            for (let i = 0; i < count; i++) {
+                let type = Math.random();
+                let w, h;
+                if (type < 0.33) {
+                    w = 300 + Math.random() * 400;
+                    h = 60 + Math.random() * 80;
+                } else if (type < 0.66) {
+                    w = 60 + Math.random() * 80;
+                    h = 300 + Math.random() * 400;
+                } else {
+                    w = 120 + Math.random() * 200;
+                    h = 120 + Math.random() * 200;
+                }
+                walls.push({
+                    x: Math.random() * (WORLD - w),
+                    y: Math.random() * (WORLD - h),
+                    w, h
+                });
+            }
+        }
+
+        // ==================== LỚP SNAKE ====================
+        class Snake {
+            constructor(name, x, y, color, isBot = false) {
+                this.name = name;
+                this.x = x;
+                this.y = y;
+                this.angle = 0;
+                this.baseSpeed = isBot ? botSpeed : playerSpeed;
+                this.speed = this.baseSpeed;
+                this.maxLength = 50;
+                this.body = [];
+                this.color = color;
+                this.isBot = isBot;
+                this.alive = true;
+                this.magnet = 0;
+                this.shield = 0;
+                this.ghost = 0;
+            }
+
+            update(dt) {
+                if (snakes.filter(s => s.isBot && s.alive).length < MAX_BOTS) spawnBot();
+                if (!this.alive) return;
+                if (this.shield > 0) this.shield -= dt;
+                if (this.ghost > 0) this.ghost -= dt;
+                if (this.isBot) this.botAI();
+
+                if (this.magnet > 0) {
+                    this.magnet -= dt;
+                    foods.forEach(f => {
+                        let dx = this.x - f.x, dy = this.y - f.y, dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 200) { f.x += dx * 5 * dt; f.y += dy * 5 * dt; }
+                    });
+                }
+
+                if (this === player && boosting && this.maxLength > 30) {
+                    this.speed = 220;
+                    this.maxLength -= 20 * dt;
+                } else {
+                    this.speed = this.baseSpeed;
+                }
+
+                this.x += Math.cos(this.angle) * this.speed * dt;
+                this.y += Math.sin(this.angle) * this.speed * dt;
+
+                this.body.push({ x: this.x, y: this.y });
+                while (this.body.length > this.maxLength) this.body.shift();
+
+                this.checkFood();
+                this.checkCollision();
+                this.checkWallCollision();
+                this.checkBorder();
+            }
+
+            checkBorder() {
+                const radius = 10;
+                if (this.ghost > 0) {
+                    if (this.x < -radius) this.x = WORLD + radius;
+                    if (this.x > WORLD + radius) this.x = -radius;
+                    if (this.y < -radius) this.y = WORLD + radius;
+                    if (this.y > WORLD + radius) this.y = -radius;
+                    return;
+                }
+                if (this.x - radius < 0 || this.x + radius > WORLD || this.y - radius < 0 || this.y + radius > WORLD) {
+                    if (this.shield > 0) this.shield = 0;
+                    else this.die();
+                }
+            }
+
+            checkWallCollision() {
+                for (let w of walls) {
+                    if (this.x > w.x && this.x < w.x + w.w && this.y > w.y && this.y < w.y + w.h) {
+                        if (this.shield > 0) this.shield = 0;
+                        else this.die();
+                    }
+                }
+            }
+
+            die() {
+                if (!this.alive) return;
+                this.alive = false;
+
+                if (this.isBot) {
+                    for (let i = 0; i < this.body.length; i += 3) {
+                        let p = this.body[i];
+                        foods.push({ x: p.x, y: p.y, type: "normal", size: 6, color: "gold" });
+                    }
+                    setTimeout(() => spawnBot(), 3000);
+                }
+
+                if (this === player) {
+                    // Rải xác thành thức ăn
+                    for (let i = 0; i < this.body.length; i += 3) {
+                        let p = this.body[i];
+                        let food = {
+                            id: Math.random().toString(),
+                            x: p.x, y: p.y,
+                            type: "normal", size: 8, color: "gray", icon: "💀"
+                        };
+                        foods.push(food);
+                        if (ROOM) {
+                            connection.invoke("AddFoodToGame", ROOM, food).catch(console.error);
+                        }
+                    }
+
+                    // Rời phòng
+                    if (ROOM) {
+                        connection.invoke("LeaveRoom", ROOM, PLAYER_ID).catch(console.error);
+                    }
+
+                    document.getElementById("gameover").style.display = "block";
+                    document.getElementById("finalScore").innerText = "Điểm: " + Math.floor(this.maxLength);
+                    saveHighScore(this.maxLength);
+                }
+            }
+
+            checkFood() {
+                for (let i = foods.length - 1; i >= 0; i--) {
+                    let f = foods[i];
+                    let dx = this.x - f.x, dy = this.y - f.y;
+                    if (dx * dx + dy * dy < (f.size + 10) * (f.size + 10)) {
+                        if (f.type === "normal") this.maxLength += 5;
+                        else if (f.type === "mega") this.maxLength += 25;
+                        else if (f.type === "magnet") this.magnet = 5;
+                        else if (f.type === "shield") this.shield = 6;
+                        else if (f.type === "ghost") this.ghost = 6;
+                        else if (f.type === "lucky") {
+                            let r = Math.random();
+                            if (r < 0.25) this.maxLength += 40;
+                            else if (r < 0.5) {
+                                this.speed = this.baseSpeed + 60;
+                                setTimeout(() => this.speed = this.baseSpeed, 3000);
+                            } else if (r < 0.75) this.shield = 6;
+                            else { this.maxLength -= 30; if (this.maxLength < 30) this.maxLength = 30; }
+                        }
+                        foods.splice(i, 1);
+                        if (ROOM && f.id) {
+                            connection.invoke("RemoveFood", ROOM, f.id).catch(console.error);
+                        }
+                    }
+                }
+            }
+
+            checkCollision() {
+                for (let s of snakes) {
+                    if (s === this || !s.alive) continue;
+                    if (this.isBot && s.isBot) continue;
+                    for (let i = 5; i < s.body.length; i++) {
+                        let seg = s.body[i];
+                        let dx = this.x - seg.x, dy = this.y - seg.y;
+                        if (dx * dx + dy * dy < 100) {
+                            if (this.shield > 0) { this.shield = 0; return; }
+                            this.die(); return;
+                        }
+                    }
+                }
+                for (let p of playersOnline) {
+                    if (p.id === PLAYER_ID || !p.body) continue;
+                    for (let i = 5; i < p.body.length; i++) {
+                        let seg = p.body[i];
+                        let dx = this.x - seg.x, dy = this.y - seg.y;
+                        if (dx * dx + dy * dy < 100) { this.die(); return; }
+                    }
+                }
+            }
+
+            botAI() {
+                if (!this.alive) return;
+                let target = null;
+                let isAggressive = false;
+                let potentialVictims = [];
+                if (player && player.alive) potentialVictims.push(player);
+                playersOnline.forEach(p => { if (p.id !== PLAYER_ID) potentialVictims.push(p); });
+                let victim = null;
+                let minDist = Infinity;
+                potentialVictims.forEach(v => {
+                    let d = Math.hypot(v.x - this.x, v.y - this.y);
+                    if (d < minDist) { minDist = d; victim = v; }
+                });
+                if (victim && minDist < 1500) {
+                    isAggressive = true;
+                    let vAngle = victim.angle || 0;
+                    let vSpeed = victim.speed || 120;
+                    let predictX = victim.x + Math.cos(vAngle) * vSpeed * 0.6;
+                    let predictY = victim.y + Math.sin(vAngle) * vSpeed * 0.6;
+                    target = { x: predictX + Math.cos(vAngle) * 50, y: predictY + Math.sin(vAngle) * 50 };
+                    if (minDist < 350 && this.maxLength > 40) this.speed = this.baseSpeed + 200;
+                    else this.speed = this.baseSpeed + 80;
+                } else {
+                    let bestFood = null;
+                    let maxScore = -Infinity;
+                    foods.forEach(f => {
+                        let d = Math.hypot(f.x - this.x, f.y - this.y);
+                        let value = (f.type === "mega") ? 10000 : 1000;
+                        let score = value - d;
+                        if (score > maxScore) { maxScore = score; bestFood = f; }
+                    });
+                    target = bestFood;
+                    this.speed = this.baseSpeed;
+                }
+                if (!target) return;
+                let desiredAngle = Math.atan2(target.y - this.y, target.x - this.x);
+                let bestAngle = desiredAngle;
+                let safestScore = -Infinity;
+                for (let a = -Math.PI; a <= Math.PI; a += 0.26) {
+                    let testAngle = desiredAngle + a;
+                    let danger = 0;
+                    [70, 150, 350].forEach(range => {
+                        let tx = this.x + Math.cos(testAngle) * range;
+                        let ty = this.y + Math.sin(testAngle) * range;
+                        if (tx < 60 || tx > WORLD - 60 || ty < 60 || ty > WORLD - 60) danger += 50000;
+                        walls.forEach(w => {
+                            if (tx > w.x - 20 && tx < w.x + w.w + 20 && ty > w.y - 20 && ty < w.y + w.h + 20) danger += 40000;
+                        });
+                        snakes.forEach(s => {
+                            if (!s.alive) return;
+                            let checkStep = (isAggressive && s === victim) ? 15 : 8;
+                            for (let i = 0; i < s.body.length; i += checkStep) {
+                                let d2 = (tx - s.body[i].x) ** 2 + (ty - s.body[i].y) ** 2;
+                                if (d2 < 1600) danger += 30000 / (range / 70);
+                            }
+                        });
+                    });
+                    let finalScore = -danger - Math.abs(a) * 500;
+                    if (finalScore > safestScore) { safestScore = finalScore; bestAngle = testAngle; }
+                }
+                let diff = bestAngle - this.angle;
+                this.angle += Math.atan2(Math.sin(diff), Math.cos(diff)) * 0.55;
+            }
+
+            draw() {
+                if (!this.alive) return;
+                ctx.save();
+                ctx.lineWidth = 14;
+                ctx.lineCap = "round";
+                ctx.strokeStyle = this.color;
+                if (this.shield > 0) { ctx.shadowColor = "cyan"; ctx.shadowBlur = 25; }
+                if (this.ghost > 0) ctx.globalAlpha = 0.6;
+                ctx.beginPath();
+                for (let i = 0; i < this.body.length; i++) {
+                    let p = this.body[i];
+                    if (i === 0) ctx.moveTo(p.x - camera.x, p.y - camera.y);
+                    else ctx.lineTo(p.x - camera.x, p.y - camera.y);
+                }
+                ctx.stroke();
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x - camera.x, this.y - camera.y, 10, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        // ==================== SINH BOT & THỨC ĂN ====================
+        function spawnBot() {
+            if (snakes.filter(s => s.isBot && s.alive).length >= MAX_BOTS) return;
+            let safe = false, x, y;
+            while (!safe) {
+                x = Math.random() * WORLD;
+                y = Math.random() * WORLD;
+                safe = true;
+                if (player) {
+                    let dx = x - player.x, dy = y - player.y;
+                    if (dx * dx + dy * dy < 40000) safe = false;
+                }
+                for (let w of walls) {
+                    if (x > w.x && x < w.x + w.w && y > w.y && y < w.y + w.h) { safe = false; break; }
+                }
+            }
+            snakes.push(new Snake("Bot" + Math.floor(Math.random() * 999), x, y, "red", true));
+        }
+
+        function spawnFood() {
+            if (foods.length >= MAX_FOOD) return;
+            let rand = Math.random();
+            let type, size, color, icon = null;
+            if (rand < 0.55) { type = "normal"; size = 6; color = "gold"; }
+            else if (rand < 0.70) { type = "mega"; size = 14; color = "violet"; icon = "💎"; }
+            else if (rand < 0.80) { type = "magnet"; size = 12; color = "cyan"; icon = "🧲"; }
+            else if (rand < 0.88) { type = "shield"; size = 12; color = "deepskyblue"; icon = "🛡"; }
+            else if (rand < 0.95) { type = "ghost"; size = 12; color = "purple"; icon = "👻"; }
+            else { type = "lucky"; size = 13; color = "lime"; icon = "🍀"; }
+            foods.push({ id: Math.random().toString(), x: Math.random() * WORLD, y: Math.random() * WORLD, type, size, color, icon });
+        }
+
+        // ==================== LEADERBOARD ====================
+        function updateLeaderboard() {
+            let board = document.getElementById("leaderboard");
+            let list = [];
+            if (player && player.alive) list.push({ name: player.name, score: player.maxLength });
+            playersOnline.forEach(p => {
+                if (p.id !== PLAYER_ID) list.push({ name: p.name || "Người chơi", score: Number(p.score) || 0 });
+            });
+            list.sort((a, b) => b.score - a.score);
+            let html = "<b>🏆 BẢNG XẾP HẠNG</b><br>";
+            list.slice(0, 10).forEach((p, i) => {
+                let color = (p.name === player?.name) ? "#00ff00" : "white";
+                html += `<span style="color:${color}">${i + 1}. ${p.name} (${Math.floor(p.score)})</span><br>`;
+            });
+            board.innerHTML = html;
+        }
+
+        // ==================== MINIMAP ====================
+        function drawMiniMap() {
+            const size = 200;
+            const scale = size / WORLD;
+            mctx.fillStyle = "#000";
+            mctx.fillRect(0, 0, size, size);
+            mctx.strokeStyle = "red";
+            mctx.lineWidth = 2;
+            mctx.strokeRect(0, 0, size, size);
+            walls.forEach(w => {
+                let x = w.x * scale, y = w.y * scale, width = w.w * scale, height = w.h * scale;
+                let grad = mctx.createLinearGradient(x, y, x + width, y + height);
+                grad.addColorStop(0, "#ff4b2b");
+                grad.addColorStop(1, "#8b0000");
+                mctx.fillStyle = grad;
+                mctx.fillRect(x, y, width, height);
+                mctx.strokeStyle = "#330000";
+                mctx.lineWidth = 1;
+                mctx.strokeRect(x, y, width, height);
+                mctx.fillStyle = "rgba(255,255,255,0.2)";
+                for (let i = 0; i < width; i += 6)
+                    for (let j = 0; j < height; j += 6)
+                        mctx.fillRect(x + i + 2, y + j + 2, 1, 1);
+            });
+            playersOnline.forEach(p => {
+                if (p.id !== PLAYER_ID) { mctx.fillStyle = "cyan"; mctx.fillRect(p.x * scale, p.y * scale, 5, 5); }
+            });
+            foods.forEach(f => { mctx.fillStyle = "yellow"; mctx.fillRect(f.x * scale, f.y * scale, 2, 2); });
+            snakes.forEach(s => { if (!s.alive || s.isBot) return; mctx.fillStyle = s === player ? "lime" : "cyan"; mctx.fillRect(s.x * scale, s.y * scale, 5, 5); });
+        }
+
+        // ==================== GỬI VỊ TRÍ ====================
+        let lastSend = 0;
+        async function sendPlayer() {
+            if (!ROOM || !player || !player.alive) return;
+            if (Date.now() - lastSend < 100) return;
+            lastSend = Date.now();
+            try {
+                await connection.invoke("UpdatePlayer", ROOM, PLAYER_ID, {
+                    id: PLAYER_ID, name: player.name, x: player.x, y: player.y,
+                    score: player.maxLength, bodyJson: JSON.stringify(player.body), isAlive: player.alive
+                });
+            } catch (err) { console.error("Send error:", err); }
+        }
+
+        // ==================== RỜI PHÒNG ====================
+        async function leaveRoomAndReload() {
+            if (ROOM) {
+                try { await connection.invoke("LeaveRoom", ROOM, PLAYER_ID); } catch(e) {}
+            }
+            location.reload();
+        }
+
+        // ==================== VÒNG LẶP GAME ====================
+        function update(dt) {
+            snakes.forEach(s => s.update(dt));
+            if (Math.random() < 0.1) spawnFood();
+            camera.x = Math.max(0, Math.min(WORLD - canvas.width, player.x - canvas.width / 2));
+            camera.y = Math.max(0, Math.min(WORLD - canvas.height, player.y - canvas.height / 2));
+            updateLeaderboard();
+            if (ROOM) sendPlayer();
+        }
+
+        function draw() {
+            ctx.fillStyle = "#111";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = "red";
+            ctx.lineWidth = 10;
+            ctx.strokeRect(-camera.x, -camera.y, WORLD, WORLD);
+            walls.forEach(w => {
+                let x = w.x - camera.x, y = w.y - camera.y;
+                ctx.shadowColor = "black";
+                ctx.shadowBlur = 15;
+                let grad = ctx.createLinearGradient(x, y, x + w.w, y + w.h);
+                grad.addColorStop(0, "#a0522d");
+                grad.addColorStop(1, "#5c2a12");
+                ctx.fillStyle = grad;
+                ctx.fillRect(x, y, w.w, w.h);
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = "#2b1408";
+                ctx.lineWidth = 4;
+                ctx.strokeRect(x, y, w.w, w.h);
+                const brickW = 50, brickH = 25;
+                ctx.strokeStyle = "rgba(0,0,0,0.4)";
+                ctx.lineWidth = 1;
+                for (let row = 0; row < w.h / brickH; row++) {
+                    for (let col = 0; col < w.w / brickW; col++) {
+                        let offset = (row % 2) * (brickW / 2);
+                        ctx.strokeRect(x + col * brickW - offset, y + row * brickH, brickW, brickH);
+                    }
+                }
+            });
+            foods.forEach(f => {
+                ctx.fillStyle = f.color;
+                ctx.beginPath();
+                ctx.arc(f.x - camera.x, f.y - camera.y, f.size, 0, Math.PI * 2);
+                ctx.fill();
+                if (f.icon) {
+                    ctx.fillStyle = "white";
+                    ctx.font = "14px Arial";
+                    ctx.fillText(f.icon, f.x - camera.x - 6, f.y - camera.y + 5);
+                }
+            });
+            snakes.forEach(s => s.draw());
+            playersOnline.forEach(p => {
+                if (p.id === PLAYER_ID || !p.body || p.body.length === 0) return;
+                ctx.lineWidth = 14;
+                ctx.lineCap = "round";
+                ctx.strokeStyle = "cyan";
+                ctx.beginPath();
+                for (let i = 0; i < p.body.length; i++) {
+                    let b = p.body[i];
+                    if (i === 0) ctx.moveTo(b.x - camera.x, b.y - camera.y);
+                    else ctx.lineTo(b.x - camera.x, b.y - camera.y);
+                }
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(p.x - camera.x, p.y - camera.y, 10, 0, Math.PI * 2);
+                ctx.fillStyle = "cyan";
+                ctx.fill();
+                ctx.fillStyle = "white";
+                ctx.font = "14px Arial";
+                ctx.fillText(p.name, p.x - camera.x - 20, p.y - camera.y - 15);
+            });
+            drawMiniMap();
+        }
+
+        let lastTime = 0;
+        function gameLoop(time) {
+            let dt = (time - lastTime) / 1000;
+            if (lastTime === 0) dt = 0;
+            lastTime = time;
+            if (player && player.alive) { update(dt); draw(); }
+            else if (player && !player.alive) { draw(); }
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ==================== ĐIỀU KHIỂN ====================
+        canvas.addEventListener("mousemove", e => { if (player) { let dx = e.clientX - canvas.width / 2, dy = e.clientY - canvas.height / 2; player.angle = Math.atan2(dy, dx); } });
+        canvas.addEventListener("mousedown", () => boosting = true);
+        canvas.addEventListener("mouseup", () => boosting = false);
+        canvas.addEventListener("mouseleave", () => boosting = false);
+
+        const joystick = document.getElementById("joystick");
+        const stick = document.getElementById("stick");
+        let joyActive = false;
+        joystick.addEventListener("touchstart", (e) => { joyActive = true; e.preventDefault(); });
+        joystick.addEventListener("touchmove", (e) => {
+            if (!joyActive || !player) return;
+            e.preventDefault();
+            let rect = joystick.getBoundingClientRect();
+            let touch = e.touches[0];
+            let x = touch.clientX - rect.left - 60;
+            let y = touch.clientY - rect.top - 60;
+            let dist = Math.sqrt(x * x + y * y);
+            let max = 40;
+            if (dist > max) { x = (x / dist) * max; y = (y / dist) * max; }
+            stick.style.left = (x + 30) + "px";
+            stick.style.top = (y + 30) + "px";
+            player.angle = Math.atan2(y, x);
+        });
+        joystick.addEventListener("touchend", () => { joyActive = false; stick.style.left = "30px"; stick.style.top = "30px"; });
+
+        const boostBtn = document.getElementById("boostBtn");
+        boostBtn.addEventListener("touchstart", (e) => { e.preventDefault(); boosting = true; });
+        boostBtn.addEventListener("touchend", (e) => { e.preventDefault(); boosting = false; });
+        boostBtn.addEventListener("touchcancel", (e) => { e.preventDefault(); boosting = false; });
+
+        function saveHighScore(score) { let hs = localStorage.getItem("highscore") || 0; if (score > hs) localStorage.setItem("highscore", Math.floor(score)); }
+        window.addEventListener("resize", () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+    </script>
+</body>
+</html>

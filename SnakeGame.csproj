@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <!-- Không cần PackageReference cho SignalR, nó nằm trong Microsoft.AspNetCore.App -->
+  <!-- Nếu cần thêm package khác thì thêm ở đây -->
+
+</Project>
